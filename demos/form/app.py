@@ -91,8 +91,10 @@ def custom_validator():
     return render_template('custom_validator.html', form=form)
 
 
+# @app.route('/uploads')
 @app.route('/uploads/<path:filename>')
 def get_file(filename):
+    # filename = request.args.get('filename')
     return send_from_directory(app.config['UPLOAD_PATH'], filename)
 
 

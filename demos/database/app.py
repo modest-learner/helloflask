@@ -5,35 +5,31 @@
     :copyright: © 2018 Grey Li
     :license: MIT, see LICENSE for more details.
 """
-import os
-import sys
-
-import click
-from flask import Flask
-from flask import redirect, url_for, abort, render_template, flash
-from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import FlaskForm
-from wtforms import SubmitField, TextAreaField
-from wtforms.validators import DataRequired
+import os,sys,click # 命令行工具
+from flask import Flask # 导入Flask类,启动Web主程序
+from flask import redirect, url_for, abort, render_template, flash # flask 常用函数
+from flask_sqlalchemy import SQLAlchemy # 数据库ORM
+from flask_wtf import FlaskForm # 表单基类
+from wtforms import SubmitField, TextAreaField # 表单字段
+from wtforms.validators import DataRequired # 表单验证器
 
 # SQLite URI compatible
 WIN = sys.platform.startswith('win')
 if WIN:
-    prefix = 'sqlite:///'
+    prefix = 'sqlite:///' # windows默认3个斜杠
 else:
-    prefix = 'sqlite:////'
+    prefix = 'sqlite:////' # linux/mac默认4个斜杠
 
 app = Flask(__name__)
 app.jinja_env.trim_blocks = True
 app.jinja_env.lstrip_blocks = True
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'secret string')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'secret string') # 设置密钥 用于flash加密、session加密、表单flask-wtf的csrf_token令牌加密
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', prefix + os.path.join(app.root_path, 'data.db'))
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL',prefix + os.path.join(app.root_path,'data.db')) # 数据库配置
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
-
 
 # handlers
 @app.shell_context_processor
@@ -49,6 +45,7 @@ def initdb(drop):
     """Initialize the database."""
     if drop:
         db.drop_all()
+        click.echo("Droped database.")
     db.create_all()
     click.echo('Initialized database.')
 
@@ -59,8 +56,11 @@ class NewNoteForm(FlaskForm):
     submit = SubmitField('Save')
 
 
-class EditNoteForm(FlaskForm):
-    body = TextAreaField('Body', validators=[DataRequired()])
+# class EditNoteForm(FlaskForm):
+#     body = TextAreaField('Body', validators=[DataRequired()])
+#     submit = SubmitField('Update')
+
+class EditNoteForm(NewNoteForm):
     submit = SubmitField('Update')
 
 

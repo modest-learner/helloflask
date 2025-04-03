@@ -6,6 +6,7 @@
     :license: MIT, see LICENSE for more details.
 """
 import os
+from datetime import timedelta
 try:
     from urlparse import urlparse, urljoin
 except ImportError:
@@ -17,6 +18,8 @@ from flask import Flask, make_response, request, redirect, url_for, abort, sessi
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'secret string')
+# app.permanent_session_lifetime = timedelta(seconds=10)
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(seconds=5)
 
 
 # get name value from query string and cookie
@@ -33,6 +36,23 @@ def hello():
     else:
         response += '[Not Authenticated]'
     return response
+    # print(request.path)
+    # print(request.method)
+    # print(request.full_path)
+    # print(request.host)
+    # print(request.host_url)
+    # print(request.base_url)
+    # print(request.url)
+    # print(request.url_root)
+    # print(request.values)
+    # name = request.values.get('name')
+    # gender = request.values.get('gender')
+    # age = request.values.get('age')
+    # if(name == 'hyyyds' and age == '22'
+    # and gender == '男'):
+    #     return "<h1>Hello, dear %s, gender is %s, age is %s</h1>" %(escape(name),escape(gender),escape(age))
+    # return "OK"
+
 
 
 # redirect
@@ -44,11 +64,12 @@ def hi():
 # use int URL converter
 @app.route('/goback/<int:year>')
 def go_back(year):
-    return 'Welcome to %d!' % (2018 - year)
+    return 'Welcome to %d!' % (2025 - year)
 
 
 # use any URL converter
-@app.route('/colors/<any(blue, white, red):color>')
+colors = ['blue','white','red']
+@app.route('/colors/<any(%s):color>' % str(colors)[1:-1])
 def three_colors(color):
     return '<p>Love is patient and kind. Love is not jealous or boastful or proud or rude.</p>'
 
@@ -137,6 +158,7 @@ def set_cookie(name):
 @app.route('/login')
 def login():
     session['logged_in'] = True
+    session.permanent = True  # use permanent session if set to True, default is False
     return redirect(url_for('hello'))
 
 
@@ -151,6 +173,7 @@ def admin():
 # log out user
 @app.route('/logout')
 def logout():
+    # session.clear()
     if 'logged_in' in session:
         session.pop('logged_in')
     return redirect(url_for('hello'))
@@ -172,6 +195,7 @@ $(function() {
             url: '/more',
             type: 'get',
             success: function(data){
+                console.log(data);
                 $('.body').append(data);
             }
         })
@@ -182,7 +206,7 @@ $(function() {
 
 @app.route('/more')
 def load_post():
-    return generate_lorem_ipsum(n=1)
+    return generate_lorem_ipsum(n=2)
 
 
 # redirect to last page
@@ -207,6 +231,11 @@ def do_something():
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
+    print(request.host_url)
+    print(request.host_url + target)
+    print(urljoin(request.host_url, target))
+    print(ref_url)
+    print(test_url)
     return test_url.scheme in ('http', 'https') and \
            ref_url.netloc == test_url.netloc
 

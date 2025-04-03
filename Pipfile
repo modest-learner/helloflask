@@ -4,22 +4,25 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-watchdog = "*"
+
 
 [packages]
-python-dotenv = "*"
-flask-sqlalchemy = "*"
 flask-mail = "*"
 sendgrid = "==5.3.0"
 flask-migrate = "*"
 flask-caching = "*"
 flask-assets = "*"
-flask = "*"
 flask-debugtoolbar = "*"
 cssmin = "*"
 jsmin = "*"
 redis = "*"
 flask-dropzone = "*"
 flask-wtf = "*"
+flask = "*"
+six = "*"
+watchdog = "*"
+bleach = "*"
 flask-ckeditor = "*"
-markupsafe = "==1.1.1"
+flask-sqlalchemy = "*"
+python-dotenv = "*"
+
